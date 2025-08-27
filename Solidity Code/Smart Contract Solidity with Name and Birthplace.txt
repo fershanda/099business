@@ -1,0 +1,92 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract LegalContract {
+    // The 5 contents (Pasal I-V)
+    string public content1;
+    string public content2;
+    string public content3;
+    string public content4;
+    string public content5;
+
+    // Struct for signer information
+    struct SignerInfo {
+        address wallet;
+        string name;
+        string birthplace;
+    }
+
+    // Designated wallets with info
+    SignerInfo public signerA;
+    SignerInfo public signerB;
+
+    // Signature state
+    enum SignState { Unsigned, Signed }
+    SignState public state;
+
+    mapping(address => bool) public hasSigned;
+
+    event Signed(address indexed signer, SignState newState);
+
+    constructor(
+        string memory _c1,
+        string memory _c2,
+        string memory _c3,
+        string memory _c4,
+        string memory _c5,
+        address _signerA,
+        string memory _nameA,
+        string memory _birthplaceA,
+        address _signerB,
+        string memory _nameB,
+        string memory _birthplaceB
+    ) {
+        content1 = _c1;
+        content2 = _c2;
+        content3 = _c3;
+        content4 = _c4;
+        content5 = _c5;
+
+        require(_signerA != address(0) && _signerB != address(0), "Invalid signer");
+        require(_signerA != _signerB, "Signers must be different");
+
+        signerA = SignerInfo(_signerA, _nameA, _birthplaceA);
+        signerB = SignerInfo(_signerB, _nameB, _birthplaceB);
+
+        state = SignState.Unsigned;
+    }
+
+    modifier onlySigner() {
+        require(msg.sender == signerA.wallet || msg.sender == signerB.wallet, "Not authorized signer");
+        _;
+    }
+
+    function signContract() external onlySigner {
+        require(!hasSigned[msg.sender], "Already signed");
+        hasSigned[msg.sender] = true;
+
+        if (hasSigned[signerA.wallet] && hasSigned[signerB.wallet]) {
+            state = SignState.Signed;
+        }
+
+        emit Signed(msg.sender, state);
+    }
+
+    // Return all contents as an array for easier decoding in JS
+    function getAllContents() public view returns (string[5] memory) {
+        return [content1, content2, content3, content4, content5];
+    }
+
+    function getState() public view returns (string memory) {
+        return state == SignState.Unsigned ? "Unsigned" : "Signed";
+    }
+
+    // Optional: getters for signer info
+    function getSignerAInfo() public view returns (address, string memory, string memory) {
+        return (signerA.wallet, signerA.name, signerA.birthplace);
+    }
+
+    function getSignerBInfo() public view returns (address, string memory, string memory) {
+        return (signerB.wallet, signerB.name, signerB.birthplace);
+    }
+}

@@ -1,0 +1,57 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract PersonInfo {
+    string public ipfsPhoto;
+    string public name;
+    string public countryBorn;
+    string public cityBirthplace;
+    string public birthYear;
+
+    // Function to set information (can be updated later)
+    function setInfo(
+        string memory _ipfsPhoto,
+        string memory _name,
+        string memory _countryBorn,
+        string memory _cityBirthplace,
+        string memory _birthYear
+    ) public {
+        ipfsPhoto = _ipfsPhoto;
+        name = _name;
+        countryBorn = _countryBorn;
+        cityBirthplace = _cityBirthplace;
+        birthYear = _birthYear;
+    }
+
+    // Getters
+    function getIpfsPhoto() public view returns (string memory) {
+        return ipfsPhoto;
+    }
+
+    function getName() public view returns (string memory) {
+        return name;
+    }
+
+    function getCountryBorn() public view returns (string memory) {
+        return countryBorn;
+    }
+
+    function getCityBirthplace() public view returns (string memory) {
+        return cityBirthplace;
+    }
+
+    function getBirthYear() public view returns (string memory) {
+        return birthYear;
+    }
+
+    // Return all at once
+    function getAllInfo() public view returns (
+        string memory _ipfsPhoto,
+        string memory _name,
+        string memory _countryBorn,
+        string memory _cityBirthplace,
+        string memory _birthYear
+    ) {
+        return (ipfsPhoto, name, countryBorn, cityBirthplace, birthYear);
+    }
+}
